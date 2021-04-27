@@ -1,0 +1,287 @@
+# -*- coding: utf-8 -*-
+
+#### IMPORT PACKAGES
+
+import numpy as np
+import pandas as pd
+import os
+import datetime
+import csv
+from functools import reduce
+from matplotlib import rc
+import matplotlib.pylab as plt
+import seaborn as sns
+import re
+
+#### IMPORT
+
+# Import logfile as a txt, data as a dataframe, where seperators are 'DD'.
+
+#### CLEANUP
+
+# Delete Column 0
+log = log[:,1:]
+
+# Turn ndarray into a list
+log2 = log.tolist()
+
+# Remove nans
+log3 = [x for x in log if not 'nan' in x]
+
+# Remove ',70,'
+log4 = [[item.replace(',70,', '') for item in log3] for log3 in log3]
+
+# For 28102019
+#del log4[0]
+
+# Concatonate sublists into a list
+log5 = [j for i in log4 for j in i]
+
+# Remove 6 first digits
+log6 = [item[6:] for item in log5]
+
+# Join all strings in list into one long string - not sure if I want to do this?
+log7 = ''.join(log6)
+
+# String from log file
+# log7 = ',[[0x8][0x1c][0x12][0x6][0xc][0x13][0xa6][0x1]a[0xc][0x9c][0x1][0xf4][0x0][0xa4][0x1][0xf7][0x1][0xa8][0x0],[0x4][0xfe][0x0][0x7][0x0][0x7][0x2][0xf0][0x7]L[0x2]u[0x0][0xa5][0x0][0xe3][0x0][0xb9][0x0]@[0x4][0xb][0x1][0x4][0x0][0x6][0x2][0x14][0x8]m[0x2]v[0x0][0xb3][0x0][0xbb][0x0][0xc5][0x0][0xa2][0xff][0x12][0x1][0x6][0x0]'
+
+# Extract all text in square brackets and put into a list
+# extract = re.findall(r"\[([A-Za-z0-9_]+)\]", log7)
+
+# Convert all hexidecimal values in list to decimal
+# convert = [int(x, 16) for x in extract]
+
+# Convert ASCII to decimal
+# ord(',')
+
+# test = ['a','b','c','d']
+# convert_ascii = [ord(x) for x in test]
+
+# Extract all individual items
+extract = re.findall(r"\[0x[0-9A-Za-z]+\]|.", log7)
+
+# Convert HEX and ASCII to digital
+convert = [ord(x) if len(x) == 1 else int(x[1:-1], 16) for x in extract]
+
+# Turn convert into df
+df = pd.DataFrame(convert)
+
+# because you have simple alternating pattern, you can just reshape
+df = pd.DataFrame(df.values.reshape(-1, 68), columns = ['block_1', 'block_2', 'ss', 'mm', 'hh', 'day', 'month', 'year', 'ch1_1', 'ch1_2', 'ch2_1', 'ch2_2', 'ch3_1', 'ch3_2', 'ch4_1', 'ch4_2', 'ch5_1', 'ch5_2', 'ch6_1', 'ch6_2', 'ch7_1', 'ch7_2', 'ch8_1', 'ch8_2', 'ch9_1', 'ch9_2', 'ch10_1', 'ch10_2', 'ch11_1', 'ch11_2', 'ch12_1', 'ch12_2', 'ch13_1', 'ch13_2', 'ch14_1', 'ch14_2', 'ch15_1', 'ch15_2', 'ch16_1', 'ch16_2', 'ch17_1', 'ch17_2', 'ch18_1', 'ch18_2', 'ch19_1', 'ch19_2', 'ch20_1', 'ch20_2', 'ch21_1', 'ch21_2', 'ch22_1', 'ch22_2', 'ch23_1', 'ch23_2', 'ch24_1', 'ch24_2', 'ch25_1', 'ch25_2', 'ch26_1', 'ch26_2', 'ch27_1', 'ch27_2', 'ch28_1', 'ch28_2', 'ch29_1', 'ch29_2', 'ch30_1', 'ch30_2'])
+
+df1 = df['block_1']*256+df['block_2']
+df2 = df['ss']
+df3 = df['mm']
+df4 = df['hh']
+df5 = df['day']
+df6 = df['month']
+df7 = df['year']
+df8 = df['ch1_1']+df['ch1_2']*256
+df9 = df['ch2_1']+df['ch2_2']*256
+df10 = df['ch3_1']+df['ch3_2']*256
+df11 = df['ch4_1']+df['ch4_2']*256
+df12 = df['ch5_1']+df['ch5_2']*256
+df13 = df['ch6_1']+df['ch6_2']*256
+df14 = df['ch7_1']+df['ch7_2']*256
+df15 = df['ch8_1']+df['ch8_2']*256
+df16 = df['ch9_1']+df['ch9_2']*256
+df17 = df['ch10_1']+df['ch10_2']*256
+df18 = df['ch11_1']+df['ch11_2']*256
+df19 = df['ch12_1']+df['ch12_2']*256
+df20 = df['ch13_1']+df['ch13_2']*256
+df21 = df['ch14_1']+df['ch14_2']*256
+df22 = df['ch15_1']+df['ch15_2']*256
+df23 = df['ch16_1']+df['ch16_2']*256
+df24 = df['ch17_1']+df['ch17_2']*256
+df25 = df['ch18_1']+df['ch18_2']*256
+df26 = df['ch19_1']+df['ch19_2']*256
+df27 = df['ch20_1']+df['ch20_2']*256
+df28 = df['ch21_1']+df['ch21_2']*256
+df29 = df['ch22_1']+df['ch22_2']*256
+df30 = df['ch23_1']+df['ch23_2']*256
+df31 = df['ch24_1']+df['ch24_2']*256
+df32 = df['ch25_1']+df['ch25_2']*256
+df33 = df['ch26_1']+df['ch26_2']*256
+df34 = df['ch27_1']+df['ch27_2']*256
+df35 = df['ch28_1']+df['ch28_2']*256
+df36 = df['ch29_1']+df['ch29_2']*256
+df37 = df['ch30_1']+df['ch30_2']*256
+
+# Create a list with all dfs to be merged
+dfs = [df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12, df13, df14, df15, df16, df17, df18, df19, df20, df21, df22, df23, df24, df25, df26, df27, df28, df29, df30, df31, df32, df33, df34, df35, df36, df37]
+
+# Concatonate all dfs
+dftest = pd.concat([pd.DataFrame(dfs)], axis=1)
+
+# Cleanup
+del dfs
+del df
+del df1
+del df2
+del df3
+del df4
+del df5
+del df6
+del df7
+del df8
+del df9
+del df10
+del df11
+del df12
+del df13
+del df14
+del df15
+del df16
+del df17
+del df18
+del df19
+del df20
+del df21
+del df22
+del df23
+del df24
+del df25
+del df26
+del df27
+del df28
+del df29
+del df30
+del df31
+del df32
+del df33
+del df34
+del df35
+del df36
+del df37
+
+# Transpose
+dffinal = dftest.transpose() 
+
+# Rename columns
+dffinal = dffinal.rename(columns={'Unnamed 0': 'block'})
+dffinal = dffinal.rename(columns={'Unnamed 1': 'Ch1'})
+dffinal = dffinal.rename(columns={'Unnamed 2': 'Ch2'})
+dffinal = dffinal.rename(columns={'Unnamed 3': 'Ch3'})
+dffinal = dffinal.rename(columns={'Unnamed 4': 'Ch4'})
+dffinal = dffinal.rename(columns={'Unnamed 5': 'Ch5'})
+dffinal = dffinal.rename(columns={'Unnamed 6': 'Ch6'})
+dffinal = dffinal.rename(columns={'Unnamed 7': 'Ch7'})
+dffinal = dffinal.rename(columns={'Unnamed 8': 'Ch8'})
+dffinal = dffinal.rename(columns={'Unnamed 9': 'Ch9'})
+dffinal = dffinal.rename(columns={'Unnamed 10': 'Ch10'})
+dffinal = dffinal.rename(columns={'Unnamed 11': 'Ch11'})
+dffinal = dffinal.rename(columns={'Unnamed 12': 'Ch12'})
+dffinal = dffinal.rename(columns={'Unnamed 13': 'Ch13'})
+dffinal = dffinal.rename(columns={'Unnamed 14': 'Ch14'})
+dffinal = dffinal.rename(columns={'Unnamed 15': 'Ch15'})
+dffinal = dffinal.rename(columns={'Unnamed 16': 'Ch16'})
+dffinal = dffinal.rename(columns={'Unnamed 17': 'Ch17'})
+dffinal = dffinal.rename(columns={'Unnamed 18': 'Ch18'})
+dffinal = dffinal.rename(columns={'Unnamed 19': 'Ch19'})
+dffinal = dffinal.rename(columns={'Unnamed 20': 'Ch20'})
+dffinal = dffinal.rename(columns={'Unnamed 21': 'Ch21'})
+dffinal = dffinal.rename(columns={'Unnamed 22': 'Ch22'})
+dffinal = dffinal.rename(columns={'Unnamed 23': 'Ch23'})
+dffinal = dffinal.rename(columns={'Unnamed 24': 'Ch24'})
+dffinal = dffinal.rename(columns={'Unnamed 25': 'Ch25'})
+dffinal = dffinal.rename(columns={'Unnamed 26': 'Ch26'})
+dffinal = dffinal.rename(columns={'Unnamed 27': 'Ch27'})
+dffinal = dffinal.rename(columns={'Unnamed 28': 'Ch28'})
+dffinal = dffinal.rename(columns={'Unnamed 29': 'Ch29'})
+dffinal = dffinal.rename(columns={'Unnamed 30': 'Ch30'})
+
+# Tidyup
+del convert
+del dftest
+del extract
+del log
+del log2
+del log3
+del log4
+del log5
+del log6
+del log7
+
+# Code all issues
+dffinal = dffinal.replace([65441], nan)
+dffinal = dffinal.replace([65442], nan)
+dffinal = dffinal.replace([65443], nan)
+dffinal = dffinal.replace([65444], nan)
+dffinal = dffinal.replace([65532], nan)
+
+
+#dffinal = dffinal.replace([65441], 'low')
+#dffinal = dffinal.replace([65442], 'high')
+#dffinal = dffinal.replace([65443], 'what')
+#dffinal = dffinal.replace([65444], 'open')
+#dffinal = dffinal.replace([65532], 'nan')
+
+
+# Convert to engineering units
+
+# The formula for converting the value in the field (n) to engineering units is
+#
+# V = n * span / MaxVal + Min
+#
+# Where Min is the bottom value of the range eg -30
+# Span is (Max – Min)  where Max is the top of the range  Span = 95C in your example
+# MaxVal is the value of n for an input corresponding to Max (65C)
+#
+# MaxVal  is usually 4000 for 12bit numbers but can be a different value. For the GD10 (-30 to 65C) MaxVal is 950 to give a resolution of 0.1C. So V(367) = 367 * 95 / 950 – 30 = 36.7 – 30 = 6.7C 
+#
+# To find the value of MaxVal for each of the  channels I would do the conversion process on a set of data that you have logged and used Darca to calculate the true values. 
+
+# Temperature = n x 95/950 -30 = 0.1n-30
+# Humidity = n x 100/4000 + 0 = 0.0025n
+# CO2 = n x 5000/5000 + 0 = n
+# PM1 = n x 250/25000 + 0 = 0.01n
+# PM2.5 = n x 250/25000 + 0 = 0.01n
+# PM10 = n x 250/25000 + 0 = 0.01n
+# Airflow = n x 250/25000 + 0 = 0.01n
+# NO2 = n x 4/31000 -1 = (4n/31000)-1
+# CO = n x 505/25250 - 5 = 0.02n-5
+# VOC = n x 50/5000 + 0 = 0.01n
+
+
+
+
+dffinal['Ch1'] = (dffinal['Ch1']*0.1)-30
+dffinal['Ch2'] = (dffinal['Ch2']*0.0025)
+dffinal['Ch3'] = (dffinal['Ch3']*1)
+dffinal['Ch4'] = (dffinal['Ch4']*0.01)
+dffinal['Ch5'] = (dffinal['Ch5']*0.01)
+dffinal['Ch6'] = (dffinal['Ch6']*0.01)
+dffinal['Ch7'] = (dffinal['Ch7']*0.01)
+dffinal['Ch8'] = ((dffinal['Ch8']*4)/31000)-1
+dffinal['Ch9'] = (dffinal['Ch9']*0.02)-5
+dffinal['Ch10'] = (dffinal['Ch10']*0.01)
+
+dffinal['Ch11'] = (dffinal['Ch11']*0.1)-30
+dffinal['Ch12'] = (dffinal['Ch12']*0.0025)
+dffinal['Ch13'] = (dffinal['Ch13']*1)
+dffinal['Ch14'] = (dffinal['Ch14']*0.01)
+dffinal['Ch15'] = (dffinal['Ch15']*0.01)
+dffinal['Ch16'] = (dffinal['Ch16']*0.01)
+dffinal['Ch17'] = (dffinal['Ch17']*0.01)
+dffinal['Ch18'] = ((dffinal['Ch18']*4)/31000)-1
+dffinal['Ch19'] = (dffinal['Ch19']*0.02)-5
+dffinal['Ch20'] = (dffinal['Ch20']*0.01)
+
+dffinal['Ch21'] = (dffinal['Ch21']*0.1)-30
+dffinal['Ch22'] = (dffinal['Ch22']*0.0025)
+dffinal['Ch23'] = (dffinal['Ch23']*1)
+dffinal['Ch24'] = (dffinal['Ch24']*0.01)
+dffinal['Ch25'] = (dffinal['Ch25']*0.01)
+dffinal['Ch26'] = (dffinal['Ch26']*0.01)
+dffinal['Ch27'] = (dffinal['Ch27']*0.01)
+dffinal['Ch28'] = ((dffinal['Ch28']*4)/31000)-1
+dffinal['Ch29'] = (dffinal['Ch29']*0.02)-5
+dffinal['Ch30'] = (dffinal['Ch30']*0.01)
+
+# Single column for date and time
+
+dffinal['datetime'] = pd.to_datetime(dffinal['day'].apply(str)+'/'+dffinal['month'].apply(str)+'/'+'20'+dffinal['year'].apply(str)+' '+dffinal['hh'].apply(str)+':'+dffinal['mm'].apply(str)+':'+dffinal['ss'].apply(str), errors='raise', dayfirst=True)
+
+# Put dffinal into excel file
+export_excel = dffinal.to_excel (r'D:\Temp\dffinal.xlsx', index = None, header=True) #Don't forget to add '.xlsx' at the end of the path
